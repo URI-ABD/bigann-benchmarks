@@ -6,7 +6,17 @@ We exclude the `Yandex Text-to-Image` dataset because the accompanying distance 
 ## Usage
 
 ```shell
-> cargo run -r -- --help
+Usage: cargo run -r -- <DATASET> <RAW_DIR> <STANDARD_DIR>
+
+Arguments:
+  <DATASET>       Name of dataset. One of ["bigann", "fb_ssnnpp", "msft_spacev", "msft_turing", "yandex_deep"]
+  <RAW_DIR>       Path to raw data directory.
+  <STANDARD_DIR>  Path to standard data directory.
+```
+
+For example (on Ark):
+```shell
+> cargo run -r -- bigann /data/raw/bigann /data/standard/bigann
 ```
 
 ## Benchmarks
