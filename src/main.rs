@@ -74,3 +74,9 @@ fn main() {
         _ => todo!(),
     };
 }
+
+/*
+This can be run as
+
+> cargo run -r -- bigann /data/raw/bigann /data/standard/bigann
+*/

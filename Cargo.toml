@@ -8,9 +8,11 @@ edition = "2021"
 rust-version = "1.68"
 
 [dependencies]
-clam = { git = "https://github.com/URI-ABD/clam" }
+clam = { git = "https://github.com/URI-ABD/clam", branch = "updates/number" }
 arrow = "40.0.0"
 clap = { version = "4.3.1", features = ["derive", "cargo"] }
+ndarray-npy = "0.8.1"
+ndarray = "0.15.6"
 
 [profile.test]
 debug = 1

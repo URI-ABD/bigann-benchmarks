@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use clam::core::number::Number;
+use clam::number::Number;
 
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
