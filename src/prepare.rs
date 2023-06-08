@@ -14,7 +14,7 @@ pub fn bigann(raw_dir: &Path, standard_dir: &Path) -> Result<(), String> {
             }
         } else {
             std::fs::create_dir(&path)
-            .map_err(|reason| format!("Could not create output directory {path:?} because {reason:?}."))?;
+                .map_err(|reason| format!("Could not create output directory {path:?} because {reason:?}."))?;
         }
         path
     };
