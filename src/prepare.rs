@@ -81,7 +81,7 @@ impl Dataset {
             "msft_turing-ground.bin",
         );
         let out_dir = create_out_dir("msft_turing", standard_dir)?;
-        raw_data.convert(&out_dir, 10_000_000)?;
+        raw_data.convert(&out_dir, 1_000_000)?;
         Ok(())
     }
 
@@ -93,7 +93,7 @@ impl Dataset {
             "yandex_deep-ground.bin",
         );
         let out_dir = create_out_dir("yandex_deep", standard_dir)?;
-        raw_data.convert(&out_dir, 10_000_000)?;
+        raw_data.convert(&out_dir, 1_000_000)?;
         Ok(())
     }
 }
