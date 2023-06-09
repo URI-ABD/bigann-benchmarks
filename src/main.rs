@@ -1,4 +1,5 @@
-use std::{path::PathBuf, str::FromStr};
+use prepare::Dataset;
+use std::path::PathBuf;
 
 use clap::{arg, command, value_parser};
 
@@ -6,47 +7,7 @@ mod data;
 mod prepare;
 mod utils;
 
-#[derive(Debug, Clone, Copy)]
-enum Dataset {
-    BigAnn,
-    FbSSNpp,
-    MsftSpaceV,
-    MsftTuring,
-    YandexDeep,
-}
-
-impl FromStr for Dataset {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "bigann" => Ok(Self::BigAnn),
-            "fb_ssnnpp" => Ok(Self::FbSSNpp),
-            "msft_spacev" => Ok(Self::MsftSpaceV),
-            "msft_turing" => Ok(Self::MsftTuring),
-            "yandex_deep" => Ok(Self::YandexDeep),
-            _ => Err(format!(
-                "Dataset cannot be created from name {}. Try one of {:?}",
-                s,
-                Self::names()
-            )),
-        }
-    }
-}
-
-impl Dataset {
-    fn names() -> [String; 5] {
-        [
-            "bigann".to_string(),
-            "fb_ssnnpp".to_string(),
-            "msft_spacev".to_string(),
-            "msft_turing".to_string(),
-            "yandex_deep".to_string(),
-        ]
-    }
-}
-
-fn main() {
+fn main() -> Result<(), String> {
     let matches = command!()
         .arg(
             arg!(<DATASET>)
@@ -70,7 +31,12 @@ fn main() {
     let standard_dir = utils::validate_data_dir(matches.get_one::<PathBuf>("STANDARD_DIR").unwrap()).unwrap();
 
     match name {
-        Dataset::BigAnn => prepare::bigann(&raw_dir, &standard_dir).unwrap(),
-        _ => todo!(),
+        Dataset::BigAnn => Dataset::convert_bigann(&raw_dir, &standard_dir)?,
+        Dataset::FbSSNpp => Dataset::convert_fb_ssnpp(&raw_dir, &standard_dir)?,
+        Dataset::MsftSpaceV => Dataset::convert_msft_spacev(&raw_dir, &standard_dir)?,
+        Dataset::MsftTuring => Dataset::convert_msft_turing(&raw_dir, &standard_dir)?,
+        Dataset::YandexDeep => Dataset::convert_yandex_deep(&raw_dir, &standard_dir)?,
     };
+
+    Ok(())
 }
