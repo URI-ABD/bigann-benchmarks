@@ -11,6 +11,7 @@ rust-version = "1.68"
 clam = { git = "https://github.com/URI-ABD/clam", branch = "updates/modularization" }
 arrow = "41.0.0"
 clap = { version = "4.3.3", features = ["derive", "cargo"] }
+py_literal = "0.4.0"
 ndarray-npy = "0.8.1"
 ndarray = "0.15.6"
 

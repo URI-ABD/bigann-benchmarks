@@ -5,8 +5,9 @@ use arrow::array::{
     UInt64Array, UInt8Array,
 };
 use clam::number::Number;
+use ndarray_npy::{ReadableElement, WritableElement};
 
-pub(crate) trait IntoArrowArray: Number {
+pub(crate) trait IntoArrowArray: Number + WritableElement + ReadableElement {
     fn into_arrow_array(slice: &[Self]) -> ArrayRef;
 }
 

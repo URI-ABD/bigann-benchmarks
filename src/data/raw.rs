@@ -16,7 +16,7 @@ pub(crate) struct RawData<T: Number> {
     pub ground_path: PathBuf,
 }
 
-impl<T: Number + IntoArrowArray> RawData<T> {
+impl<T: IntoArrowArray> RawData<T> {
     pub fn from_dir(data_dir: &Path, base_name: &str, query_name: &str, ground_name: &str) -> Self {
         assert!(data_dir.exists(), "Path not found: {:?}", data_dir);
 
@@ -66,7 +66,7 @@ impl<T: Number + IntoArrowArray> RawData<T> {
     }
 }
 
-fn convert_vectors<T: Number + IntoArrowArray>(
+fn convert_vectors<T: IntoArrowArray>(
     inp_path: &Path,
     batch_size: usize,
     name: &str,
@@ -96,7 +96,7 @@ fn convert_vectors<T: Number + IntoArrowArray>(
 }
 
 #[allow(dead_code)]
-fn convert_batch_npy<R: Read, T: Number + IntoArrowArray>(
+fn convert_batch_npy<R: Read, T: IntoArrowArray>(
     handle: &mut R,
     batch_size: usize,
     dimensionality: usize,
@@ -125,8 +125,7 @@ fn convert_batch_npy<R: Read, T: Number + IntoArrowArray>(
     Ok(batch.nrows())
 }
 
-#[allow(dead_code)]
-fn convert_batch_arrow<R: Read, T: Number + IntoArrowArray>(
+fn convert_batch_arrow<R: Read, T: IntoArrowArray>(
     handle: &mut R,
     batch_size: usize,
     dimensionality: usize,
