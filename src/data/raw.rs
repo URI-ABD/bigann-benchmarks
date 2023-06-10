@@ -1,22 +1,21 @@
-use arrow::ipc::writer::FileWriter;
-use arrow::record_batch::RecordBatch;
-use clam::number::Number;
-use ndarray::prelude::*;
 use std::io::Read;
 use std::path::{Path, PathBuf};
+
+use arrow::ipc::writer::FileWriter;
+use arrow::record_batch::RecordBatch;
+use ndarray::prelude::*;
 
 use super::number_to_arrow::IntoArrowArray;
 use super::standard::StandardData;
 
 #[derive(Debug, Clone)]
-pub(crate) struct RawData<T: Number> {
-    pub _t: std::marker::PhantomData<T>,
+pub(crate) struct RawData {
     pub base_path: PathBuf,
     pub query_path: PathBuf,
     pub ground_path: PathBuf,
 }
 
-impl<T: IntoArrowArray> RawData<T> {
+impl RawData {
     pub fn from_dir(data_dir: &Path, base_name: &str, query_name: &str, ground_name: &str) -> Self {
         assert!(data_dir.exists(), "Path not found: {:?}", data_dir);
 
@@ -39,7 +38,6 @@ impl<T: IntoArrowArray> RawData<T> {
                 path.push(ground_name);
                 path
             },
-            _t: Default::default(),
         };
 
         assert!(data.base_path.exists(), "Path not found: {:?}", data.base_path);
@@ -49,7 +47,7 @@ impl<T: IntoArrowArray> RawData<T> {
         data
     }
 
-    pub fn convert(&self, out_dir: &Path, batch_size: usize) -> Result<StandardData<T>, String> {
+    pub fn convert<T: IntoArrowArray>(&self, out_dir: &Path, batch_size: usize) -> Result<StandardData<T>, String> {
         let [cardinality, dimensionality] = convert_vectors::<T>(&self.base_path, batch_size, "base", out_dir)?;
         let [num_queries, _] = convert_vectors::<T>(&self.query_path, batch_size, "query", out_dir)?;
 
@@ -166,7 +164,7 @@ fn convert_batch_arrow<R: Read, T: IntoArrowArray>(
     Ok(num_rows)
 }
 
-fn read_row<R: Read, T: Number>(handle: &mut R, dimensionality: usize) -> Result<Vec<T>, String> {
+fn read_row<R: Read, T: IntoArrowArray>(handle: &mut R, dimensionality: usize) -> Result<Vec<T>, String> {
     let num_bytes = T::num_bytes() * dimensionality;
     let mut row = vec![0_u8; num_bytes];
 

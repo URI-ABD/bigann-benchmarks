@@ -43,57 +43,57 @@ impl Dataset {
     }
 
     pub fn convert_bigann(raw_dir: &Path, standard_dir: &Path) -> Result<(), String> {
-        let raw_data = RawData::<u8>::from_dir(raw_dir, "bigann-1b.u8bin", "bigann-query.u8bin", "bigann-ground.bin");
+        let raw_data = RawData::from_dir(raw_dir, "bigann-1b.u8bin", "bigann-query.u8bin", "bigann-ground.bin");
         let out_dir = create_out_dir("bigann", standard_dir)?;
-        raw_data.convert(&out_dir, 10_000_000)?;
+        raw_data.convert::<u8>(&out_dir, 10_000_000)?;
         Ok(())
     }
 
     pub fn convert_fb_ssnpp(raw_dir: &Path, standard_dir: &Path) -> Result<(), String> {
-        let raw_data = RawData::<u8>::from_dir(
+        let raw_data = RawData::from_dir(
             raw_dir,
             "fb_ssnpp-1b.u8bin",
             "fb_ssnpp-query.u8bin",
             "fb_ssnpp-ground.rangeres",
         );
         let out_dir = create_out_dir("fb_ssnpp", standard_dir)?;
-        raw_data.convert(&out_dir, 10_000_000)?;
+        raw_data.convert::<u8>(&out_dir, 10_000_000)?;
         Ok(())
     }
 
     pub fn convert_msft_spacev(raw_dir: &Path, standard_dir: &Path) -> Result<(), String> {
-        let raw_data = RawData::<i8>::from_dir(
+        let raw_data = RawData::from_dir(
             raw_dir,
             "msft_spacev-1b.i8bin",
             "msft_spacev-query.i8bin",
             "msft_spacev-ground.bin",
         );
         let out_dir = create_out_dir("msft_spacev", standard_dir)?;
-        raw_data.convert(&out_dir, 10_000_000)?;
+        raw_data.convert::<i8>(&out_dir, 10_000_000)?;
         Ok(())
     }
 
     pub fn convert_msft_turing(raw_dir: &Path, standard_dir: &Path) -> Result<(), String> {
-        let raw_data = RawData::<f32>::from_dir(
+        let raw_data = RawData::from_dir(
             raw_dir,
             "msft_turing-1b.fbin",
             "msft_turing-query.fbin",
             "msft_turing-ground.bin",
         );
         let out_dir = create_out_dir("msft_turing", standard_dir)?;
-        raw_data.convert(&out_dir, 1_000_000)?;
+        raw_data.convert::<f32>(&out_dir, 1_000_000)?;
         Ok(())
     }
 
     pub fn convert_yandex_deep(raw_dir: &Path, standard_dir: &Path) -> Result<(), String> {
-        let raw_data = RawData::<f32>::from_dir(
+        let raw_data = RawData::from_dir(
             raw_dir,
             "yandex_deep-1b.fbin",
             "yandex_deep-query.fbin",
             "yandex_deep-ground.bin",
         );
         let out_dir = create_out_dir("yandex_deep", standard_dir)?;
-        raw_data.convert(&out_dir, 1_000_000)?;
+        raw_data.convert::<f32>(&out_dir, 1_000_000)?;
         Ok(())
     }
 }
