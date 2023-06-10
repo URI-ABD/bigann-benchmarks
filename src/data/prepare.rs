@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
-use super::data::raw::RawData;
+use super::raw::RawData;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Dataset {

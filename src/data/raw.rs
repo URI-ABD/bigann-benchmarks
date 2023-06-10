@@ -5,17 +5,18 @@ use ndarray::prelude::*;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 
+use super::number_to_arrow::IntoArrowArray;
 use super::standard::StandardData;
 
 #[derive(Debug, Clone)]
-pub struct RawData<T: Number> {
-    pub(crate) _t: std::marker::PhantomData<T>,
-    pub(crate) base_path: PathBuf,
-    pub(crate) query_path: PathBuf,
-    pub(crate) ground_path: PathBuf,
+pub(crate) struct RawData<T: Number> {
+    pub _t: std::marker::PhantomData<T>,
+    pub base_path: PathBuf,
+    pub query_path: PathBuf,
+    pub ground_path: PathBuf,
 }
 
-impl<T: Number> RawData<T> {
+impl<T: Number + IntoArrowArray> RawData<T> {
     pub fn from_dir(data_dir: &Path, base_name: &str, query_name: &str, ground_name: &str) -> Self {
         assert!(data_dir.exists(), "Path not found: {:?}", data_dir);
 
@@ -65,7 +66,7 @@ impl<T: Number> RawData<T> {
     }
 }
 
-fn convert_vectors<T: Number>(
+fn convert_vectors<T: Number + IntoArrowArray>(
     inp_path: &Path,
     batch_size: usize,
     name: &str,
@@ -95,7 +96,7 @@ fn convert_vectors<T: Number>(
 }
 
 #[allow(dead_code)]
-fn convert_batch_npy<R: Read, T: Number>(
+fn convert_batch_npy<R: Read, T: Number + IntoArrowArray>(
     handle: &mut R,
     batch_size: usize,
     dimensionality: usize,
@@ -125,7 +126,7 @@ fn convert_batch_npy<R: Read, T: Number>(
 }
 
 #[allow(dead_code)]
-fn convert_batch_arrow<R: Read, T: Number>(
+fn convert_batch_arrow<R: Read, T: Number + IntoArrowArray>(
     handle: &mut R,
     batch_size: usize,
     dimensionality: usize,
@@ -137,7 +138,7 @@ fn convert_batch_arrow<R: Read, T: Number>(
     let mut batch = Vec::new();
     for _ in 0..batch_size {
         if let Ok(row) = read_row::<R, T>(handle, dimensionality) {
-            let row = T::as_arrow_array(&row);
+            let row = T::into_arrow_array(&row);
             batch.push(row);
         } else {
             break;

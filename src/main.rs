@@ -1,10 +1,9 @@
-use prepare::Dataset;
+use data::prepare::Dataset;
 use std::path::PathBuf;
 
 use clap::{arg, command, value_parser};
 
 mod data;
-mod prepare;
 mod utils;
 
 fn main() -> Result<(), String> {
