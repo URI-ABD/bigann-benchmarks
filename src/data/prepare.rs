@@ -45,7 +45,7 @@ impl Dataset {
     pub fn convert_bigann(raw_dir: &Path, standard_dir: &Path) -> Result<(), String> {
         let raw_data = RawData::from_dir(raw_dir, "bigann-1b.u8bin", "bigann-query.u8bin", "bigann-ground.bin");
         let out_dir = create_out_dir("bigann", standard_dir)?;
-        raw_data.convert::<u8>(&out_dir, 10_000_000)?;
+        raw_data.convert::<u8>(&out_dir, 10_000_000, true)?;
         Ok(())
     }
 
@@ -57,7 +57,7 @@ impl Dataset {
             "fb_ssnpp-ground.rangeres",
         );
         let out_dir = create_out_dir("fb_ssnpp", standard_dir)?;
-        raw_data.convert::<u8>(&out_dir, 10_000_000)?;
+        raw_data.convert::<u8>(&out_dir, 10_000_000, false)?;
         Ok(())
     }
 
@@ -69,7 +69,7 @@ impl Dataset {
             "msft_spacev-ground.bin",
         );
         let out_dir = create_out_dir("msft_spacev", standard_dir)?;
-        raw_data.convert::<i8>(&out_dir, 10_000_000)?;
+        raw_data.convert::<i8>(&out_dir, 10_000_000, true)?;
         Ok(())
     }
 
@@ -81,7 +81,7 @@ impl Dataset {
             "msft_turing-ground.bin",
         );
         let out_dir = create_out_dir("msft_turing", standard_dir)?;
-        raw_data.convert::<f32>(&out_dir, 1_000_000)?;
+        raw_data.convert::<f32>(&out_dir, 1_000_000, true)?;
         Ok(())
     }
 
@@ -93,7 +93,7 @@ impl Dataset {
             "yandex_deep-ground.bin",
         );
         let out_dir = create_out_dir("yandex_deep", standard_dir)?;
-        raw_data.convert::<f32>(&out_dir, 1_000_000)?;
+        raw_data.convert::<f32>(&out_dir, 1_000_000, true)?;
         Ok(())
     }
 }

@@ -47,21 +47,95 @@ impl RawData {
         data
     }
 
-    pub fn convert<T: IntoArrowArray>(&self, out_dir: &Path, batch_size: usize) -> Result<StandardData<T>, String> {
-        let [cardinality, dimensionality] = convert_vectors::<T>(&self.base_path, batch_size, "base", out_dir)?;
+    pub fn convert<T: IntoArrowArray>(
+        &self,
+        out_dir: &Path,
+        batch_size: usize,
+        knn: bool,
+    ) -> Result<StandardData<T>, String> {
+        // let [cardinality, dimensionality] = convert_vectors::<T>(&self.base_path, batch_size, "base", out_dir)?;
         let [num_queries, _] = convert_vectors::<T>(&self.query_path, batch_size, "query", out_dir)?;
+        if knn {
+            let [ground_queries, _] = convert_ground_knn(&self.ground_path, "ground", out_dir)?;
+            if num_queries != ground_queries {
+                return Err(format!(
+                    "Number of queries ({}) does not match number of ground truth queries ({}).",
+                    num_queries, ground_queries
+                ));
+            }
+        } else {
+            todo!()
+        }
 
         let data = StandardData {
             _t: Default::default(),
             data_dir: out_dir.to_owned(),
-            dimensionality,
-            cardinality,
+            dimensionality: 0,
+            cardinality: 0,
             batch_size,
             num_queries,
         };
 
         Ok(data)
     }
+}
+
+fn convert_ground_knn(inp_path: &Path, name: &str, out_dir: &Path) -> Result<[usize; 2], String> {
+    let mut handle =
+        std::fs::File::open(inp_path).map_err(|reason| format!("Failed ot open {name} file because {reason:?}"))?;
+    let (num_queries, k) = {
+        let q_k: Vec<u32> = read_row::<_, u32>(&mut handle, 2)?;
+        (q_k[0] as usize, q_k[1] as usize)
+    };
+    println!("Expecting to read ground truth from {name} set with {num_queries} queries and k = {k} ...");
+    println!("Converting ground truth data from {name} set to arrow format ...");
+    let neighbors = read_row::<_, u32>(&mut handle, num_queries * k)?;
+    let distances = read_row::<_, f32>(&mut handle, num_queries * k)?;
+    if neighbors.len() != distances.len() {
+        return Err(format!(
+            "Number of neighbors ({}) does not match number of distances ({}).",
+            neighbors.len(),
+            distances.len()
+        ));
+    }
+
+    let neighbors = RecordBatch::try_from_iter_with_nullable(
+        neighbors
+            .chunks_exact(k)
+            .map(u32::into_arrow_array)
+            .enumerate()
+            .map(|(i, row)| (format!("{i}"), row, false))
+            .collect::<Vec<_>>(),
+    )
+    .unwrap();
+    let writer = {
+        let mut path = out_dir.to_owned();
+        path.push("neighbors.arrow");
+        std::fs::File::create(path).unwrap()
+    };
+    let mut writer = FileWriter::try_new(writer, neighbors.schema().as_ref()).unwrap();
+    writer.write(&neighbors).unwrap();
+    writer.finish().unwrap();
+
+    let distances = RecordBatch::try_from_iter_with_nullable(
+        distances
+            .chunks_exact(k)
+            .map(f32::into_arrow_array)
+            .enumerate()
+            .map(|(i, row)| (format!("{i}"), row, false))
+            .collect::<Vec<_>>(),
+    )
+    .unwrap();
+    let writer = {
+        let mut path = out_dir.to_owned();
+        path.push("distances.arrow");
+        std::fs::File::create(path).unwrap()
+    };
+    let mut writer = FileWriter::try_new(writer, distances.schema().as_ref()).unwrap();
+    writer.write(&distances).unwrap();
+    writer.finish().unwrap();
+
+    Ok([num_queries, k])
 }
 
 fn convert_vectors<T: IntoArrowArray>(
